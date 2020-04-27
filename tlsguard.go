@@ -1,6 +1,8 @@
-/* Time-stamp: <2020-04-24 18:40:59 (jgalt@kali) tlsguard.go>
+/* Time-stamp: <2020-04-27 15:33:43 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
+ *
+ * https://github.com/brandir/tlsguard
  *
  * TLS cipher check implementation in Go.
  * Many ideas from the testssl.sh program, cf. https://github.com/drwetter/testssl.sh/blob/3.1dev/testssl.sh
@@ -20,6 +22,7 @@ const (
 	cdate = "04/24/2020"
 	carch = "kali"
 	program = "tlsguard"
+	github = "https://github.com/brandir/tlsguard"
 	
 	// cf. https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r2.pdf
 	
@@ -140,6 +143,49 @@ const (
 	TLS_AES_128_CCM_8_SHA256                uint16 = 0x1305
 )
 
+// Create a dictionary with TLS cipher information using a map.
+// Structure: hexcode -> cert type | cipher name | tls version support
+func createCipherDictionary() map[string][]string {
+        m := make(map[string][]string)
+        m["0xc02b"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+        m["0xc02c"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+        m["0xc0ac"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_128_CCM", "TLS1.2"}
+	m["0xc0ad"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_256_CCM", "TLS1.2"}
+	m["0xc0ae"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8", "TLS1.2"}
+	m["0xc0af"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8", "TLS1.2"}
+	m["0xc023"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0xc024"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384", "TLS1.2"}
+
+	m["0xc009"] = []string{"ECDSA", "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0xc00a"] = []string{"ECDDA", "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0xc02f"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0xc030"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0x009e"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0x009f"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384", "TLS1,2"}
+	m["0xc09e"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_128_CCM", "TLS1,2"}
+	m["0xc09f"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CCM", "TLS1.2"}
+	m["0xc0a2"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_128_CCM_8", "TLS1.2"}
+	m["0xc0a3"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CCM_8", "TLS1,2"}
+	m["0xc027"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0xc028"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384", "TLS1.2"}
+	m["0x0067"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0x006b"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256", "TLS1.2"}
+
+	m["0xc013"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0xc014"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0x0033"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0x0039"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	
+	return m
+}
+
+func getCipherHex(cipher uint16)[]string {
+	_ = cipher
+	res := []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256", "TLS1.2"}
+	return res
+}
+
 // Checks if the hostname can be looked up.
 func validateHostname(hostname string) bool {
 	addr, err := net.LookupHost(hostname)
@@ -151,7 +197,7 @@ func validateHostname(hostname string) bool {
 }
 
 func main () {
-	fmt.Printf("--- %s V%s [(c) %s %s)] ---\n", program, version, author, cdate)
+	fmt.Printf("--- %s V%s [(c) %s %s <%s>] ---\n", program, version, author, cdate, github)
 
 	if validateHostname("www.freebsd.org") {
 		fmt.Printf("www.freebsd.org found!\n")

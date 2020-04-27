@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-04-27 15:33:43 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-04-27 17:49:17 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -176,14 +176,70 @@ func createCipherDictionary() map[string][]string {
 	m["0xc014"] = []string{"RSA", "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
 	m["0x0033"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
 	m["0x0039"] = []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0x00a2"] = []string{"DSA", "TLS_DHE_DSS_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0x00a3"] = []string{"DSA", "TLS_DHE_DSS_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0x0040"] = []string{"DSA", "TLS_DHE_DSS_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0x006a"] = []string{"DSA", "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256", "TLS1.2"}
+
+	m["0x0032"] = []string{"DSA", "TLS_DHE_DSS_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1,1", "TLS1.0"}
+	m["0x0038"] = []string{"DSA", "TLS_DHE_DSS_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0x00a4"] = []string{"DSA", "TLS_DH_DSS_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0x00a5"] = []string{"DSA", "TLS_DH_DSS_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0x003e"] = []string{"DSA", "TLS_DH_DSS_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0x0068"] = []string{"DSA", "TLS_DH_DSS_WITH_AES_256_CBC_SHA256", "TLS1.2"}
+
+	m["0x0030"] = []string{"DSA", "TLS_DH_DSS_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0x0036"] = []string{"DSA", "TLS_DH_DSS_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1,0"}
+
+	m["0x00a4"] = []string{"DSA-DH", "TLS_DH_DSS_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0x00a5"] = []string{"DSA-DH", "TLS_DH_DSS_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0x003e"] = []string{"DSA-DH", "TLS_DH_DSS_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0x0068"] = []string{"DSA-DH", "TLS_DH_DSS_WITH_AES_256_CBC_SHA256", "TLS1.2"}
+
+	m["0x0030"] = []string{"DSA-DH", "TLS_DH_DSS_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0x0036"] = []string{"DSA-DH", "TLS_DH_DSS_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0x00a0"] = []string{"RSA-DH", "TLS_DH_RSA_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0x00a1"] = []string{"RSA-DH", "TLS_DH_RSA_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0x003f"] = []string{"RSA-DH", "TLS_DH_RSA_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0x0069"] = []string{"RSA-DH", "TLS_DH_RSA_WITH_AES_256_CBC_SHA256", "TLS1.2"}
+
+	m["0x0031"] = []string{"RSA-DH", "TLS_DH_RSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0x0037"] = []string{"RSA-DH", "TLS_DH_RSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0xc02d"] = []string{"ECDSA-ECDH", "TLS_ECDH_ECDSA_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0xc02e"] = []string{"ECDSA-ECDH", "TLS_ECDH_ECDSA_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0xc025"] = []string{"ECDSA-ECDH", "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0xc026"] = []string{"ECDSA-ECDH", "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA384", "TLS1.2"}
+
+	m["0xc004"] = []string{"ECDSA-ECDH", "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0xc005"] = []string{"ECDSA-ECDH", "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0xc031"] = []string{"RSA-ECDH", "TLS_ECDH_RSA_WITH_AES_128_GCM_SHA256", "TLS1.2"}
+	m["0xc032"] = []string{"RSA-ECDH", "TLS_ECDH_RSA_WITH_AES_256_GCM_SHA384", "TLS1.2"}
+	m["0xc029"] = []string{"RSA-ECDH", "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA256", "TLS1.2"}
+	m["0xc02a"] = []string{"RSA-ECDH", "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA384", "TLS1.2"}
+
+	m["0xc00e"] = []string{"RSA-ECDH", "TLS_ECDH_RSA_WITH_AES_128_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+	m["0xc00f"] = []string{"RSA-ECDH", "TLS_ECDH_RSA_WITH_AES_256_CBC_SHA", "TLS1.2", "TLS1.1", "TLS1.0"}
+
+	m["0x1301"] = []string{"RSA", "ECDSA", "TLS_AES_128_GCM_SHA256", "TLS1.3"}
+	m["0x1302"] = []string{"RSA", "ECDSA", "TLS_AES_256_GCM_SHA384", "TLS1.3"}
+	m["0x1304"] = []string{"RSA", "ECDSA", "TLS_AES_128_CCM_SHA256", "TLS1.3"}
+	m["0x1305"] = []string{"RSA", "ECDSA", "TLS_AES_128_CCM_8_SHA256", "TLS1.3"}
 	
 	return m
 }
 
-func getCipherHex(cipher uint16)[]string {
-	_ = cipher
-	res := []string{"RSA", "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256", "TLS1.2"}
-	return res
+func getCipherHex(cipher_hex string, tls_dict map[string][]string)[]string {
+	if res, found := tls_dict[cipher_hex]; found {
+		fmt.Println(res)
+		return res
+	} else {
+		return res
+	}
 }
 
 // Checks if the hostname can be looked up.
@@ -204,5 +260,11 @@ func main () {
 	} else {
 		fmt.Printf("www.freebsd.org not found!\n")
 	}
+	fmt.Println("... createCipherDictionary()")
+	cipher_dict := createCipherDictionary()
+	fmt.Println("... getCipherHex()")
+	getCipherHex("0xc009", cipher_dict)
+	getCipherHex("0x0036", cipher_dict)
+	getCipherHex("0x1301", cipher_dict)
 }
 

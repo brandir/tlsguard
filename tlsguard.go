@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-04-27 17:49:17 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-04-28 12:02:59 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -12,7 +12,10 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net"
+	"net/http"
+	"os"
 )
 
 const (
@@ -252,6 +255,49 @@ func validateHostname(hostname string) bool {
 	}
 }
 
+// Look up the local node name.
+func getNodename() string {
+	nodename, err := os.Hostname()
+	if err != nil {
+		panic(err)
+	} else {
+		return nodename
+	}
+}
+
+// Look up the local IP.
+func getLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	} else {
+		for _, address := range addrs {
+			// check the address type and ignore the loopback IP
+			if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+				if ipnet.IP.To4() != nil {
+					return ipnet.IP.String()
+				}
+			}
+		}
+	}
+	return ""
+}
+
+// Look up the public IP.
+func getPublicIP() string {
+	url := "https://api.ipify.org?format=text"
+	resp, err := http.Get(url)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+	ip, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
+	return string(ip)
+}
+
 func main () {
 	fmt.Printf("--- %s V%s [(c) %s %s <%s>] ---\n", program, version, author, cdate, github)
 
@@ -260,11 +306,14 @@ func main () {
 	} else {
 		fmt.Printf("www.freebsd.org not found!\n")
 	}
-	fmt.Println("... createCipherDictionary()")
-	cipher_dict := createCipherDictionary()
-	fmt.Println("... getCipherHex()")
-	getCipherHex("0xc009", cipher_dict)
-	getCipherHex("0x0036", cipher_dict)
-	getCipherHex("0x1301", cipher_dict)
+	// fmt.Println("... createCipherDictionary()")
+	// cipher_dict := createCipherDictionary()
+	// fmt.Println("... getCipherHex()")
+	//	getCipherHex("0xc009", cipher_dict)
+	// getCipherHex("0x0036", cipher_dict)
+	// getCipherHex("0x1301", cipher_dict)
+	fmt.Println(getNodename())
+	fmt.Println(getLocalIP())
+	fmt.Println(getPublicIP())
 }
 

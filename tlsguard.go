@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-04-28 12:02:59 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-04-29 15:58:17 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -146,6 +146,33 @@ const (
 	TLS_AES_128_CCM_8_SHA256                uint16 = 0x1305
 )
 
+// Variables and function for color codes for highlighted output.
+var (
+	Info = teal
+	Log  = purple
+	Warn = yellow
+	Fata = red
+	User = magenta
+)
+
+var (
+	black   = Color("\033[1;30m%s\033[0m")
+        red     = Color("\033[1;31m%s\033[0m")
+        green   = Color("\033[1;32m%s\033[0m")
+        yellow  = Color("\033[1;33m%s\033[0m")
+        purple  = Color("\033[1;34m%s\033[0m")
+        magenta = Color("\033[1;35m%s\033[0m")
+        teal    = Color("\033[1;36m%s\033[0m")
+        white   = Color("\033[1;37m%s\033[0m")
+)
+
+func Color(colorstring string) func(...interface{}) string {
+        sprint := func(args ...interface{}) string {
+                return fmt.Sprintf(colorstring, fmt.Sprint(args...))
+        }
+        return sprint
+}
+	
 // Create a dictionary with TLS cipher information using a map.
 // Structure: hexcode -> cert type | cipher name | tls version support
 func createCipherDictionary() map[string][]string {
@@ -312,8 +339,8 @@ func main () {
 	//	getCipherHex("0xc009", cipher_dict)
 	// getCipherHex("0x0036", cipher_dict)
 	// getCipherHex("0x1301", cipher_dict)
-	fmt.Println(getNodename())
-	fmt.Println(getLocalIP())
-	fmt.Println(getPublicIP())
+	fmt.Println(Info(getNodename()))
+	fmt.Println(Log(getLocalIP()))
+	fmt.Println(Warn(getPublicIP()))
 }
 

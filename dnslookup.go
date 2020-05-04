@@ -4,6 +4,11 @@
 
 // Setting GODEBUG=netdns=9 gives more insight how go is doing that.
 // Go's stdlib either uses the C stdlib (via cgo) or a pure DNS resolver.
+
+// Forcing resolver settings with:
+// export GODEBUG=netdns=go    # force pure Go resolver
+// export GODEBUG=netdns=cgo   # force cgo resolver
+
 // 
 // Output for elrond@rivendell is the following
 // 

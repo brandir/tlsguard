@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-04 15:08:26 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-04 16:36:05 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -272,6 +272,12 @@ func getCipherHex(cipher_hex string, tls_dict map[string][]string)[]string {
 	} else {
 		return res
 	}
+}
+
+// Get the rDNS entry
+func getrDNSentry(host string) string {
+	fmt.Println(host)
+	return ""
 }
 
 // Checks if the hostname can be looked up.

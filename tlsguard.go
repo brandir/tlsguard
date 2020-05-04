@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-04 16:36:05 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-04 16:57:40 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -165,8 +165,13 @@ var (
         purple  = Color("\033[1;34m%s\033[0m")
         magenta = Color("\033[1;35m%s\033[0m")
         teal    = Color("\033[1;36m%s\033[0m")
-        white   = Color("\033[1;37m%s\033[0m")
+        white   = Color("\033[1;7m%s\033[0m")
 )
+
+func Reverse(rs string) string {
+	fmt.Printf("\033[7m%s\033[m", rs)
+	return ""
+}
 
 func Color(colorstring string) func(...interface{}) string {
         sprint := func(args ...interface{}) string {
@@ -363,7 +368,7 @@ func main () {
 	//	getCipherHex("0xc009", cipher_dict)
 	// getCipherHex("0x0036", cipher_dict)
 	// getCipherHex("0x1301", cipher_dict)
-	fmt.Println(Info(getNodename()))
+	fmt.Println(Reverse(getNodename()))
 	fmt.Println(Log(getLocalIP()))
 	fmt.Println(Warn(getPublicIP()))
 

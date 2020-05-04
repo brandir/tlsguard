@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-04-29 15:58:17 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-04 15:08:26 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -11,11 +11,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
+	"time"
 )
 
 const (
@@ -325,14 +327,30 @@ func getPublicIP() string {
 	return string(ip)
 }
 
-func main () {
-	fmt.Printf("--- %s V%s [(c) %s %s <%s>] ---\n", program, version, author, cdate, github)
+// Get formatted time string, e.g. 2020-04-29 17:52:55.
+func getTime() string {
+	t := time.Now()
+        ts := fmt.Sprintf("%04d-%02d-%02d %02d:%02d:%02d", t.Year(), t.Month(), t.Day(), t.Hour(), t.Minute(), t.Second())
+	return ts
+}
 
-	if validateHostname("www.freebsd.org") {
-		fmt.Printf("www.freebsd.org found!\n")
-	} else {
-		fmt.Printf("www.freebsd.org not found!\n")
-	}
+// Print banner and version information.
+func printBanner() string {
+	fmt.Printf("--- %s V%s [(c) %s %s <%s>] ---\n", program, version, author, cdate, github)
+	return ""
+}
+
+func main () {
+
+	// Command line options processing.
+	var uri string
+	//	printBanner()
+
+	//	if validateHostname("www.freebsd.org") {
+	//		fmt.Printf("www.freebsd.org found!\n")
+	//	} else {
+	//		fmt.Printf("www.freebsd.org not found!\n")
+	//	}
 	// fmt.Println("... createCipherDictionary()")
 	// cipher_dict := createCipherDictionary()
 	// fmt.Println("... getCipherHex()")
@@ -342,5 +360,53 @@ func main () {
 	fmt.Println(Info(getNodename()))
 	fmt.Println(Log(getLocalIP()))
 	fmt.Println(Warn(getPublicIP()))
+
+	banner := flag.Bool("banner", false, "Display banner and version of tlsguard\n")
+	b := flag.Bool("b", false, "Display banner and version of tlsguard\n")
+	log := flag.Bool("log", false, "Log output to 'tlsguard.log'\n")
+        l := flag.Bool("l", false, "Log output to 'tlsguard.log'\n")
+        test := flag.Bool("test", false, "Option for test & development [default: off]\n")
+        t := flag.Bool("t", false, "Option for test & development [default: off]\n")
+        flag.StringVar(&uri, "uri", "", "Input URI to be checked\n")
+        flag.StringVar(&uri, "u", "", "Input URI to be checked\n")
+        verbose := flag.Bool("verbose", false, "Verbosity level [default: off]\n")
+        v :=  flag.Bool("v", false, "Verbosity level [default: off]\n")
+
+	flag.Usage = func() {
+                fmt.Printf("Usage: %s [options] <URI>\n", os.Args[0])
+                fmt.Printf("Check TLS protocol and cipher details.\n")
+                fmt.Println()
+                fmt.Printf("Mandatory arguments for long options are mandatory for short options too.\n")
+                fmt.Printf("    -h, --help            display this help and exit\n")
+                fmt.Printf("    -b, --banner          display banner and version of %s\n")
+                fmt.Printf("    -V, --version         display version and exit\n")
+                fmt.Println()
+                fmt.Printf("    -a, --all             perform every action\n")
+                fmt.Printf("    -l, --log <logfile>   log stdout to specified <logfile>\n")
+                fmt.Printf("    -t, --test            option for testing only\n")
+                fmt.Printf("    -u, --uri             uri to be checked\n")
+                fmt.Printf("    -v, --verbose         be verbose\n")
+                //              flag.PrintDefaults()
+        }
+        flag.Parse()
+
+	fmt.Println(Info(getTime()))
+	
+	if *banner || *b {
+		printBanner()
+	}
+	if *log || *l {
+                fmt.Printf("Logging to 'tlsguard.log' ...\n")
+        }
+        if *test || *t {
+                fmt.Printf("Running in test mode ...\n")
+        }
+        if *verbose || *v {
+                fmt.Printf("Verbose mode is on ...\n")
+        }
+        if len(uri) > 0 {
+                fmt.Printf("Checking URI '%s' ...\n", uri)
+        }
+
 }
 

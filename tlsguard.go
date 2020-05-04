@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-04 16:57:40 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-04 20:25:06 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -17,6 +17,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -280,9 +281,25 @@ func getCipherHex(cipher_hex string, tls_dict map[string][]string)[]string {
 }
 
 // Get the rDNS entry
-func getrDNSentry(host string) string {
-	fmt.Println(host)
-	return ""
+func getDNSentry(host string) []string {
+	res := []string{}
+	ips, err := net.LookupIP(host)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
+		os.Exit(1)
+	}
+	for _, ip := range ips {
+		res = append(res, ip.String())
+	}
+	fmt.Printf("Host: %s\n", host)
+	for _, ip := range res {
+		if strings.Contains(ip, ":") {
+			fmt.Printf("IPv6: %s\n", ip)
+		} else {
+			fmt.Printf("IPv4: %s\n", ip)
+		}
+	}
+	return res
 }
 
 // Checks if the hostname can be looked up.
@@ -355,22 +372,13 @@ func main () {
 
 	// Command line options processing.
 	var uri string
-	//	printBanner()
 
-	//	if validateHostname("www.freebsd.org") {
-	//		fmt.Printf("www.freebsd.org found!\n")
-	//	} else {
-	//		fmt.Printf("www.freebsd.org not found!\n")
-	//	}
-	// fmt.Println("... createCipherDictionary()")
-	// cipher_dict := createCipherDictionary()
-	// fmt.Println("... getCipherHex()")
-	//	getCipherHex("0xc009", cipher_dict)
-	// getCipherHex("0x0036", cipher_dict)
-	// getCipherHex("0x1301", cipher_dict)
-	fmt.Println(Reverse(getNodename()))
-	fmt.Println(Log(getLocalIP()))
-	fmt.Println(Warn(getPublicIP()))
+	fmt.Println()
+	fmt.Println(Log("Time.....: " + getTime()))
+	fmt.Println(Log("Host.....: " + getNodename()))
+	fmt.Println(Log("LocalIP..: " + getLocalIP()))
+	fmt.Println(Log("PublicIP.: " + getPublicIP()))
+	fmt.Println()
 
 	banner := flag.Bool("banner", false, "Display banner and version of tlsguard\n")
 	b := flag.Bool("b", false, "Display banner and version of tlsguard\n")
@@ -401,8 +409,6 @@ func main () {
         }
         flag.Parse()
 
-	fmt.Println(Info(getTime()))
-	
 	if *banner || *b {
 		printBanner()
 	}
@@ -410,7 +416,11 @@ func main () {
                 fmt.Printf("Logging to 'tlsguard.log' ...\n")
         }
         if *test || *t {
-                fmt.Printf("Running in test mode ...\n")
+                fmt.Println(Reverse("### Running in test mode ###\n"))
+		getDNSentry("google.com"); fmt.Println()
+		getDNSentry("www.freebsd.org"); fmt.Println()
+		getDNSentry("www.amadeus.com"); fmt.Println()
+		
         }
         if *verbose || *v {
                 fmt.Printf("Verbose mode is on ...\n")

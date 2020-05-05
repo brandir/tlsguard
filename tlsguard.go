@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-04 20:25:06 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-05 14:28:20 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -17,6 +17,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -271,6 +272,16 @@ func createCipherDictionary() map[string][]string {
 	return m
 }
 
+// Check if OpenSSL is installed and return path on success and empty string if missing.
+func getOpenssl() string {
+	path, err := exec.LookPath("openssl")
+	if err != nil {
+		return ""
+	} else {
+		return path
+	}
+}
+
 func getCipherHex(cipher_hex string, tls_dict map[string][]string)[]string {
 	if res, found := tls_dict[cipher_hex]; found {
 		fmt.Println(res)
@@ -364,7 +375,23 @@ func getTime() string {
 
 // Print banner and version information.
 func printBanner() string {
-	fmt.Printf("--- %s V%s [(c) %s %s <%s>] ---\n", program, version, author, cdate, github)
+	out, err := exec.Command("/usr/bin/openssl", "version").Output()
+	if err != nil {
+		panic(err)
+	}
+	output := string(out[:])
+	openssl_version := fmt.Sprintf("%s", output)
+	
+	fmt.Println()
+	fmt.Printf("+-----------------------------------------------+\n")
+	fmt.Printf("|  %s V%s [(c) %s %s]          |\n", program, version, author, cdate)
+	fmt.Printf("|  Github: %s  |\n", github)
+	fmt.Printf("|                                               |\n")
+	fmt.Printf("|  Using %s            |\n", strings.Replace(openssl_version, "\n", "", -1))
+	fmt.Printf("|  on %s [%s]              |\n", getNodename(), getOpenssl())
+	fmt.Printf("|                                               |\n")
+	fmt.Printf("+-----------------------------------------------+\n")
+	fmt.Println()
 	return ""
 }
 
@@ -417,9 +444,10 @@ func main () {
         }
         if *test || *t {
                 fmt.Println(Reverse("### Running in test mode ###\n"))
-		getDNSentry("google.com"); fmt.Println()
-		getDNSentry("www.freebsd.org"); fmt.Println()
-		getDNSentry("www.amadeus.com"); fmt.Println()
+		// getDNSentry("google.com"); fmt.Println()
+		// getDNSentry("www.freebsd.org"); fmt.Println()
+		// getDNSentry("www.amadeus.com"); fmt.Println()
+		printBanner()
 		
         }
         if *verbose || *v {

@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-05 14:28:20 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-06 17:59:26 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -11,6 +11,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -373,6 +374,32 @@ func getTime() string {
 	return ts
 }
 
+// Get the number of supported ciphers from openssl.
+func getOpensslCiphercount() int {
+	cmd := exec.Command("/usr/bin/openssl", "ciphers", "-V", "ALL:COMPLEMENTOFALL")
+	outfile, err := os.Create("./openssl-ciphers.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer outfile.Close()
+	cmd.Stdout = outfile
+
+	err = cmd.Start()
+	if err != nil {
+		panic(err)
+	}
+	cmd.Wait()
+
+	file, _ := os.Open("./openssl-ciphers.txt")
+	fileScanner := bufio.NewScanner(file)
+	count := 0
+	for fileScanner.Scan() {
+		count++
+	}
+	fmt.Printf("openssl cipher count: %d\n", count)
+	return count
+}
+
 // Print banner and version information.
 func printBanner() string {
 	out, err := exec.Command("/usr/bin/openssl", "version").Output()
@@ -448,7 +475,7 @@ func main () {
 		// getDNSentry("www.freebsd.org"); fmt.Println()
 		// getDNSentry("www.amadeus.com"); fmt.Println()
 		printBanner()
-		
+		getOpensslCiphercount()		
         }
         if *verbose || *v {
                 fmt.Printf("Verbose mode is on ...\n")

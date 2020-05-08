@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-06 17:59:26 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-08 15:56:01 (elrond@rivendell) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -374,6 +374,15 @@ func getTime() string {
 	return ts
 }
 
+// Print datetimer banner on stdout (kind is 'Start' or 'End').
+func dateBanner(kind string) {
+	ts := getTime()
+	node_ip_port := "96.47.72.84:443"
+	node := "www.freebsd.org"
+	str := fmt.Sprintf("%s %s   -->> %s (%s) <<--", kind, ts, node_ip_port, node)
+	fmt.Println(Reverse(str))
+}	
+
 // Get the number of supported ciphers from openssl.
 func getOpensslCiphercount() int {
 	cmd := exec.Command("/usr/bin/openssl", "ciphers", "-V", "ALL:COMPLEMENTOFALL")
@@ -482,6 +491,8 @@ func main () {
         }
         if len(uri) > 0 {
                 fmt.Printf("Checking URI '%s' ...\n", uri)
+		dateBanner("Start")
+		getDNSentry(uri)
         }
 
 }

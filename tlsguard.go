@@ -1,4 +1,4 @@
-/* Time-stamp: <2020-05-08 15:56:01 (elrond@rivendell) tlsguard.go>
+/* Time-stamp: <2020-05-11 10:34:22 (jgalt@kali) tlsguard.go>
  *
  * tlsguard project, created 04/24/2020
  *
@@ -12,6 +12,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -353,8 +354,11 @@ func getLocalIP() string {
 }
 
 // Look up the public IP.
+// We disable (and afterwards enable again) certificate security checks as otherwise the call
+// to the mentioned url is failing.
 func getPublicIP() string {
 	url := "https://api.ipify.org?format=text"
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	resp, err := http.Get(url)
 	if err != nil {
 		panic(err)
@@ -364,6 +368,7 @@ func getPublicIP() string {
 	if err != nil {
 		panic(err)
 	}
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: false}
 	return string(ip)
 }
 
